@@ -24,7 +24,9 @@
               </span>
               <!-- Popup -->
               <div class="absolute hidden group-hover:block bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10">
+                {% if author.affiliations %}
                 <p><strong>Affiliations:</strong> {{ author.affiliations | join(', ') }}</p>
+                {% endif %}
                 <p><strong>Papers:</strong> {{ author.paperCount }}</p>
                 <p><strong>Citations:</strong> {{ author.citationCount }}</p>
                 <p><strong>hIndex:</strong> {{ author.hIndex }}</p>
@@ -80,6 +82,8 @@
               </a>
             </div>
 
+            <!-- Generate podcast link button -->
+
             <!-- Citations section -->
             <div>
               <h2 class="text-xl font-semibold text-blue-700 mb-3">Citations</h2>
@@ -96,54 +100,42 @@
 
               <!-- Citation table -->
               <div>
-                <div class="text-sm text-gray-500 mb-2">Citation Table</div>
-                <div class="overflow-x-auto">
-                  <table class="min-w-full border-collapse">
-                    <thead>
-                      <tr class="bg-gray-100">
-                        <th
-                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-                        >
-                          Title
-                        </th>
-                        <th
-                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-                        >
-                          Year
-                        </th>
-                        <th
-                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-                        >
-                          Authors
-                        </th>
+              <div class="text-sm text-gray-500 mb-2">Citations Table</div>
+              <div class="overflow-x-auto">
+              <div class="overflow-y-auto" style="max-height: 500px;"> <!-- Adjust height as needed -->
+                <table class="min-w-full border-collapse">
+                  <thead class="sticky top-0">
+                    <tr class="bg-gray-100">
+                      <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Title</th>
+                      <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Year</th>
+                      <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Authors</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200">
+                    {% for citation in citations_info %}
+                      <tr class="hover:bg-gray-50">
+                        <td class="py-2 px-3 text-sm text-blue-600">
+                          <a href="{% if citation.citingPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ citation.citingPaper.externalIds.ArXiv }}{% else %}{{ citation.citingPaper.url }}{% endif %}" target="_blank">
+                            {{ citation.citingPaper.title }}
+                          </a>
+                        </td>
+                        <td class="py-2 px-3 text-sm">{{ citation.citingPaper.year }}</td>
+                        <td class="py-2 px-3 text-sm">
+                          {% set authors = citation.citingPaper.authors %}
+                          {% if authors|length > 3 %}
+                            {{ authors[:3] | map(attribute='name') | join(', ') }}, ...
+                          {% else %}
+                            {{ authors | map(attribute='name') | join(', ') }}
+                          {% endif %}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                      {% for citation in citations_info %}
-                        <tr class="hover:bg-gray-50">
-                          <td class="py-2 px-3 text-sm text-blue-600">
-                            <a href="{% if citation.citingPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ citation.citingPaper.externalIds.ArXiv }}{% else %}{{ citation.citingPaper.url }}{% endif %}" target="_blank">
-                              {{ citation.citingPaper.title }}
-                            </a>
-                          </td>
-                          <td class="py-2 px-3 text-sm">{{ citation.citingPaper.year }}</td>
-                          <td class="py-2 px-3 text-sm">
-                            {% set authors = citation.citingPaper.authors %}
-                            {% if authors|length > 3 %}
-                              {{ authors[:3] | map(attribute='name') | join(', ') }}, ...
-                            {% else %}
-                              {{ authors | map(attribute='name') | join(', ') }}
-                            {% endif %}
-                          </td>
-                        </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </div>
+                    {% endfor %}
+                  </tbody>
+                </table>
               </div>
-            </div>
-
-            <!-- Graph Visualization Section: ARNAV ADDED -->
+              </div>
+              </div>
+              </div>
 
             <!-- References section -->
             <div>
@@ -161,53 +153,98 @@
 
               <!-- References table -->
               <div>
-                <div class="text-sm text-gray-500 mb-2">References Table</div>
-                <div class="overflow-x-auto">
-                  <table class="min-w-full border-collapse">
-                    <thead>
-                      <tr class="bg-gray-100">
-                        <th
-                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-                        >
-                          Title
-                        </th>
-                        <th
-                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-                        >
-                          Year
-                        </th>
-                        <th
-                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-                        >
-                          Authors
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                      {% for reference in references_info %}
-                        <tr class="hover:bg-gray-50">
-                          <td class="py-2 px-3 text-sm text-blue-600">
-                            <a href="{% if reference.citedPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ reference.citedPaper.externalIds.ArXiv }}{% else %}{{ reference.citedPaper.url }}{% endif %}" target="_blank">
-                              {{ reference.citedPaper.title }}
-                            </a>
-                          </td>
-                          <td class="py-2 px-3 text-sm">{{ reference.citedPaper.year }}</td>
-                          <td class="py-2 px-3 text-sm">
-                            {% set authors = reference.citedPaper.authors %}
-                            {% if authors|length > 3 %}
-                              {{ authors[:3] | map(attribute='name') | join(', ') }}, ...
-                            {% else %}
-                              {{ authors | map(attribute='name') | join(', ') }}
-                            {% endif %}
-                          </td>
-                        </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+  <div class="text-sm text-gray-500 mb-2">References Table</div>
+  <div class="overflow-x-auto">
+    <div class="overflow-y-auto" style="max-height: 500px;"> <!-- Adjust height as needed -->
+      <table class="min-w-full border-collapse">
+        <thead class="sticky top-0 bg-gray-100"> <!-- Added sticky and bg-color -->
+          <tr>
+            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Title
+            </th>
+            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Year
+            </th>
+            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Authors
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for reference in references_info %}
+            <tr class="hover:bg-gray-50">
+              <td class="py-2 px-3 text-sm text-blue-600">
+                <a href="{% if reference.citedPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ reference.citedPaper.externalIds.ArXiv }}{% else %}{{ reference.citedPaper.url }}{% endif %}" target="_blank">
+                  {{ reference.citedPaper.title }}
+                </a>
+              </td>
+              <td class="py-2 px-3 text-sm">{{ reference.citedPaper.year }}</td>
+              <td class="py-2 px-3 text-sm">
+                {% set authors = reference.citedPaper.authors %}
+                {% if authors|length > 3 %}
+                  {{ authors[:3] | map(attribute='name') | join(', ') }}, ...
+                {% else %}
+                  {{ authors | map(attribute='name') | join(', ') }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
             </div>
 
+
+            <!-- Recommended papers section -->
+            <div>
+              <h2 class="text-xl font-semibold text-blue-700 mb-3">Recommended Papers</h2>
+
+              <!-- Recommended Papers table -->
+              <div>
+  <div class="text-sm text-gray-500 mb-2">Recommended Papers Table</div>
+  <div class="overflow-x-auto">
+    <div class="overflow-y-auto" style="max-height: 500px;"> <!-- Adjust height as needed -->
+      <table class="min-w-full border-collapse">
+        <thead class="sticky top-0 bg-gray-100"> <!-- Added sticky and bg-color -->
+          <tr>
+            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Title
+            </th>
+            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Year
+            </th>
+            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              Authors
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for paper in recommended_papers %}
+            <tr class="hover:bg-gray-50">
+              <td class="py-2 px-3 text-sm text-blue-600">
+                <a href="{% if paper.externalIds.ArXiv %}http://localhost:8000/abs/{{ paper.externalIds.ArXiv }}{% else %}{{ paper.url }}{% endif %}" target="_blank">
+                  {{ paper.title }}
+                </a>
+              </td>
+              <td class="py-2 px-3 text-sm">{{ paper.year }}</td>
+              <td class="py-2 px-3 text-sm">
+                {% set authors = paper.authors %}
+                {% if authors|length > 3 %}
+                  {{ authors[:3] | map(attribute='name') | join(', ') }}, ...
+                {% else %}
+                  {{ authors | map(attribute='name') | join(', ') }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+            </div>
           </div>
 
           <!-- Right column: Chat assistant -->
