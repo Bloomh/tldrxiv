@@ -1,66 +1,90 @@
 from google import genai
+from google.genai.chats import Chat
 import httpx
 import io
 from google.genai import types
 from dotenv import load_dotenv
 import os
-from typing import Iterable
+from typing import Iterator
 
 load_dotenv()
 
 client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
 
 
-def gemini_upload_file(pdf_url: str) -> types.Document:
+def gemini_upload_file(pdf_content: bytes) -> types.File:
     """
     Upload a PDF file to Gemini
 
     Args:
-        pdf_url (str): URL to the PDF file
+        pdf_content (bytes): PDF file content
 
     Returns:
-        Document: Document object from Gemini
+        types.File: File object from Gemini
     """
-    doc_io = io.BytesIO(httpx.get(pdf_url).content)
+    doc_io = io.BytesIO(pdf_content)
     document = client.files.upload(
         file=doc_io,
-        config=dict(mime_type='application/pdf')
+        config=dict(mime_type='application/pdf'),
     )
 
     return document
 
 
-def create_gemini_chat(doc: types.Document, model: str = "gemini-2.0-flash-lite") -> types.Chat:
+def create_gemini_chat(doc: types.File, model: str = "gemini-2.0-flash-lite") -> Chat:
     """
     Creates a chat with a faux history that includes file upload
 
     Args:
-        doc (Document): Document to upload (Document object from gemini_upload_file)
+        doc (types.File): File to upload (File object from gemini_upload_file)
         model (str, optional): Model to use. Defaults to "gemini-2.0-flash-lite".
 
     Returns:
         Chat: Chat object from Gemini
     """
+    # Hard-coded system prompt
+    system_prompt = (
+        "You are a helpful research assistant that helps users understand academic papers. "
+        "You should provide clear, concise explanations of complex concepts in the paper. "
+        "When asked about the paper, focus on explaining the key ideas, methodology, results, and implications. "
+        "If you're unsure about something, acknowledge the limitations of your understanding rather than making up information."
+        "Do not answer unrelated questions that are not about the paper or any relevant fields."
+    )
+
+    # Create history
+    history = []
+
+    # Add document upload to history
+    history.append(
+        types.Content(
+            role="user",
+            parts=[
+                types.Part(text="I would like to discuss this paper. Here is the document:"),
+                types.Part.from_uri(file_uri=doc.uri, mime_type="application/pdf")
+            ]
+        )
+    )
+
+    # Add initial model response
+    history.append(
+        types.Content(
+            role="model",
+            parts=[types.Part(text="I've reviewed the document. What would you like to know?")]
+        )
+    )
+
+    # Create the chat
     chat = client.chats.create(
         model=model,
-        history=[
-            types.Content(
-                role="user",
-                parts=[
-                    types.Part(text="Here's a document I want to discuss"),
-                    types.Part.from_uri(file_uri=doc.uri, mime_type="application/pdf")
-                ]
-            ),
-            types.Content(
-                role="model",
-                parts=[types.Part(text="I've reviewed the document. What would you like to know?")]
-            )
-        ]
+        history=history,
+        config={
+            'system_instruction': system_prompt
+        }
     )
 
     return chat
 
-def gemini_ask_question(chat: types.Chat, prompt: str) -> Iterable[str]:
+def gemini_ask_question(chat: Chat, prompt: str) -> Iterator[str]:
     """
     Ask a question to Gemini. Note that the response is a stream of text chunks.
 
