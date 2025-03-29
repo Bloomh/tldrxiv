@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ paper.title }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- KaTeX and marked.js libraries for LaTeX and Markdown rendering -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+      integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
+      crossorigin="anonymous"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+      integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+      integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    
+    <!-- Custom styles and JavaScript for LaTeX and markdown content -->
+    <link rel="stylesheet" href="/static/css/markdown-latex-styles.css" />
+    <script src="/static/js/markdown-latex-renderer.js"></script>
   </head>
   <body class="bg-gray-50">
     <div class="container mx-auto px-4 py-8 max-w-6xl">
@@ -58,7 +83,7 @@
             <!-- Abstract section -->
             <div class="mb-8">
               <h2 class="text-xl font-semibold text-blue-700 mb-3">Abstract</h2>
-              <div class="text-gray-700 leading-relaxed">{{ paper.summary }}</div>
+              <div id="abstract-content" class="text-gray-700 leading-relaxed markdown-content">{{ paper.summary }}</div>
             </div>
 
             <!-- PDF link button -->
@@ -217,5 +242,15 @@
         </div>
       </div>
     </div>
+    <!-- Initialize Markdown and LaTeX rendering for the abstract -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Render only LaTeX in the abstract content (no Markdown)
+        const abstractContent = document.getElementById('abstract-content');
+        if (abstractContent) {
+          renderLatexOnly(abstractContent);
+        }
+      });
+    </script>
   </body>
 </html>

@@ -20,69 +20,10 @@
     crossorigin="anonymous"
   ></script>
   <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+  <script src="/static/js/markdown-latex-renderer.js"></script>
 
-  <!-- Custom styles for chat messages with LaTeX and markdown -->
-  <style>
-    .chat-message {
-      line-height: 1.5;
-      overflow-wrap: break-word;
-    }
-
-    .chat-message p {
-      margin-bottom: 0.75rem;
-    }
-
-    .chat-message p:last-child {
-      margin-bottom: 0;
-    }
-
-    .chat-message code {
-      background-color: #f1f1f1;
-      padding: 0.1rem 0.3rem;
-      border-radius: 0.25rem;
-      font-family: monospace;
-      font-size: 0.9em;
-    }
-
-    .chat-message pre {
-      background-color: #f1f1f1;
-      padding: 0.75rem;
-      border-radius: 0.25rem;
-      overflow-x: auto;
-      margin-bottom: 0.75rem;
-    }
-
-    .chat-message pre code {
-      background-color: transparent;
-      padding: 0;
-      border-radius: 0;
-    }
-
-    .chat-message ul,
-    .chat-message ol {
-      margin-left: 1.5rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .chat-message ul {
-      list-style-type: disc;
-    }
-
-    .chat-message ol {
-      list-style-type: decimal;
-    }
-
-    .chat-message .katex-display {
-      margin: 0.5rem 0;
-      overflow-x: auto;
-      overflow-y: hidden;
-    }
-
-    .chat-message a {
-      color: #2563eb;
-      text-decoration: underline;
-    }
-  </style>
+  <!-- Link to external CSS file for markdown and LaTeX styles -->
+  <link rel="stylesheet" href="/static/css/markdown-latex-styles.css" />
 
   <h2 class="text-xl font-semibold text-blue-700 mb-3">Chat Assistant</h2>
 
@@ -93,7 +34,7 @@
   >
     <!-- Initial welcome message -->
     <div class="bg-gray-100 rounded-lg p-3 max-w-[90%] self-start">
-      <div class="text-sm chat-message">
+      <div class="text-sm markdown-content">
         I've reviewed the paper. What would you like to know about it?
       </div>
     </div>
@@ -131,7 +72,7 @@
     // Render LaTeX in the initial welcome message
     setTimeout(() => {
       const welcomeMessage = document.querySelector('.chat-message');
-      if (welcomeMessage) renderMath(welcomeMessage);
+      if (welcomeMessage) renderMarkdownAndLatex(welcomeMessage, welcomeMessage.textContent);
     }, 500); // Give KaTeX time to load
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
@@ -141,31 +82,7 @@
     console.log('Chat component initialized');
     console.log('Paper ID:', paperId);
 
-    // Function to render LaTeX in an element
-    function renderMath(element) {
-      // Ensure the KaTeX auto-render function is available
-      if (typeof renderMathInElement === 'function') {
-        renderMathInElement(element, {
-          delimiters: [
-            { left: '$$', right: '$$', display: true },
-            { left: '$', right: '$', display: false },
-            { left: '\\(', right: '\\)', display: false },
-            { left: '\\[', right: '\\]', display: true },
-          ],
-          throwOnError: false,
-        });
-      } else {
-        // If KaTeX isn't loaded yet, try again in a moment
-        setTimeout(() => renderMath(element), 100);
-      }
-    }
-
-    // Configure marked.js to handle LaTeX properly
-    marked.use({
-      mangle: false,
-      headerIds: false,
-      breaks: true,
-    });
+    // Markdown and LaTeX rendering functions are imported from the external JS file
 
     // Function to add a message to the chat
     function addMessage(text, isUser = false) {
@@ -175,16 +92,14 @@
         : 'bg-gray-100 rounded-lg p-3 max-w-[90%] self-start';
 
       const messagePara = document.createElement('div');
-      messagePara.className = 'text-sm chat-message';
+      messagePara.className = 'text-sm markdown-content';
 
       if (isUser) {
         // For user messages, just use text
         messagePara.textContent = text;
       } else {
         // For AI messages, render markdown and LaTeX
-        messagePara.innerHTML = marked.parse(text);
-        // Render LaTeX after markdown is processed
-        renderMath(messagePara);
+        renderMarkdownAndLatex(messagePara, text);
       }
 
       messageDiv.appendChild(messagePara);
@@ -205,7 +120,7 @@
       messageDiv.className = 'bg-gray-100 rounded-lg p-3 max-w-[90%] self-start';
 
       const messagePara = document.createElement('div');
-      messagePara.className = 'text-sm chat-message';
+      messagePara.className = 'text-sm markdown-content';
       messageDiv.appendChild(messagePara);
       chatMessages.appendChild(messageDiv);
 
@@ -222,8 +137,7 @@
           responseText += chunk;
 
           // Update the message with the current text, rendered as markdown with LaTeX
-          messagePara.innerHTML = marked.parse(responseText);
-          renderMath(messagePara);
+          renderMarkdownAndLatex(messagePara, responseText);
 
           // Scroll to bottom of chat
           chatMessages.scrollTop = chatMessages.scrollHeight;
