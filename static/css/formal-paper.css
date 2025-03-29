@@ -1,0 +1,293 @@
+/**
+ * Formal Paper Styling
+ * Custom styles for a more professional academic paper look
+ */
+
+:root {
+  --primary-color: #1a365d;
+  --secondary-color: #2c5282;
+  --accent-color: #4299e1;
+  --light-accent: #ebf4ff;
+  --text-color: #2d3748;
+  --light-text: #4a5568;
+  --border-color: #e2e8f0;
+  --background-color: #f8fafc;
+  --card-background: #ffffff;
+  --hover-color: #f7fafc;
+  --serif-font: 'Merriweather', 'Georgia', serif;
+  --sans-font: 'Source Sans 3', 'Arial', sans-serif;
+}
+
+body {
+  font-family: var(--serif-font);
+  color: var(--text-color);
+  background-color: var(--background-color);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+/* Paper container */
+.paper-container {
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Paper header */
+.paper-header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 2.5rem 2rem 2rem;
+  background-color: var(--light-accent);
+  position: relative;
+}
+
+.paper-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+}
+
+.paper-title {
+  font-family: var(--serif-font);
+  font-weight: 700;
+  color: var(--primary-color);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.paper-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  height: 3px;
+  background-color: var(--accent-color);
+  opacity: 0.7;
+}
+
+/* Author tags */
+.author-tag {
+  background-color: var(--light-accent);
+  border: 1px solid var(--accent-color);
+  color: var(--secondary-color);
+  padding: 0.35rem 0.85rem;
+  border-radius: 2rem;
+  font-size: 0.875rem;
+  font-family: var(--sans-font);
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.author-tag:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.author-popup {
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  background-color: var(--card-background);
+  padding: 1rem;
+  min-width: 250px;
+  z-index: 50;
+}
+
+/* Section headers */
+.section-title {
+  font-family: var(--serif-font);
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--light-accent);
+  position: relative;
+  letter-spacing: 0.02em;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background-color: var(--secondary-color);
+}
+
+/* Abstract */
+.abstract-container {
+  background-color: var(--hover-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1.75rem 2rem;
+  margin-bottom: 2.5rem;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.03);
+  position: relative;
+}
+
+/* Tables */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+  font-family: var(--sans-font);
+}
+
+.data-table thead {
+  background-color: var(--light-accent);
+  position: sticky;
+  top: 0;
+}
+
+.data-table th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--secondary-color);
+  padding: 0.85rem 1.25rem;
+  text-align: left;
+  border-bottom: 2px solid var(--border-color);
+  background-color: rgba(66, 153, 225, 0.08);
+}
+
+.data-table td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background-color: var(--hover-color);
+}
+
+/* Paper links */
+.paper-link {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-bottom: 1px dotted var(--accent-color);
+  padding-bottom: 1px;
+}
+
+.paper-link:hover {
+  color: var(--secondary-color);
+  border-bottom: 1px solid var(--secondary-color);
+  background-color: rgba(66, 153, 225, 0.05);
+}
+
+/* Action buttons */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  font-family: var(--sans-font);
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.02em;
+}
+
+.action-button:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-button svg {
+  margin-right: 0.5rem;
+}
+
+/* Table containers */
+.table-container {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table-header {
+  background-color: var(--light-accent);
+  padding: 0.85rem 1.25rem;
+  font-weight: 600;
+  font-family: var(--sans-font);
+  color: var(--secondary-color);
+  border-bottom: 1px solid var(--border-color);
+  letter-spacing: 0.02em;
+  position: relative;
+}
+
+.table-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 50px;
+  height: 1px;
+  background-color: var(--accent-color);
+}
+
+.table-content {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Chat container */
+.chat-container {
+  background-color: var(--light-accent);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  height: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .paper-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .paper-title {
+    font-size: 1.5rem;
+  }
+
+  .abstract-container {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+}

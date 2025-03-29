@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ paper.title }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- KaTeX and marked.js libraries for LaTeX and Markdown rendering -->
     <link
       rel="stylesheet"
@@ -26,55 +26,80 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
-    
+
     <!-- Custom styles and JavaScript for LaTeX and markdown content -->
     <link rel="stylesheet" href="/static/css/markdown-latex-styles.css" />
+    <link rel="stylesheet" href="/static/css/formal-paper.css" />
     <script src="/static/js/markdown-latex-renderer.js"></script>
+
+    <!-- Font imports for formal styling -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for academic icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   </head>
-  <body class="bg-gray-50">
+  <body>
     <div class="container mx-auto px-4 py-8 max-w-6xl">
+      <!-- Academic journal header -->
+      <div class="text-center mb-6">
+        <div class="text-base md:text-lg uppercase tracking-wider text-gray-500 mb-1 font-semibold">TLDRxiv</div>
+      </div>
+
       <!-- Main paper container with border -->
-      <div class="border border-blue-200 rounded-lg overflow-hidden shadow-lg bg-white">
+      <div class="paper-container">
         <!-- Paper header section -->
-        <div class="p-6 border-b border-blue-100">
+        <div class="paper-header">
           <!-- Title -->
-          <h1 class="text-2xl font-bold text-blue-800 mb-4">{{ paper.title }}</h1>
+          <h1 class="text-2xl md:text-3xl paper-title">{{ paper.title }}</h1>
 
           <!-- Authors -->
           <div class="flex flex-wrap gap-2 mb-4">
             {% for author in authors_info %}
             <div class="relative inline-block group">
-              <span class="text-blue-600 border border-blue-300 rounded-full px-3 py-1 text-sm cursor-pointer">
-                {{ author.name }}
+              <span class="author-tag cursor-pointer">
+                <i class="fas fa-user-academic mr-1 opacity-70"></i> {{ author.name }}
               </span>
               <!-- Popup -->
-              <div class="absolute hidden group-hover:block bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10">
+              <div class="absolute hidden group-hover:block author-popup z-10">
                 {% if author.affiliations %}
-                <p><strong>Affiliations:</strong> {{ author.affiliations | join(', ') }}</p>
+                <p><i class="fas fa-university text-gray-500 mr-2"></i><strong>Affiliations:</strong> {{ author.affiliations | join(', ') }}</p>
                 {% endif %}
-                <p><strong>Papers:</strong> {{ author.paperCount }}</p>
-                <p><strong>Citations:</strong> {{ author.citationCount }}</p>
-                <p><strong>hIndex:</strong> {{ author.hIndex }}</p>
+                <p><i class="fas fa-file-alt text-gray-500 mr-2"></i><strong>Papers:</strong> {{ author.paperCount }}</p>
+                <p><i class="fas fa-quote-right text-gray-500 mr-2"></i><strong>Citations:</strong> {{ author.citationCount }}</p>
+                <p><i class="fas fa-chart-line text-gray-500 mr-2"></i><strong>hIndex:</strong> {{ author.hIndex }}</p>
                 {% if author.homepage %}
-                <p><a href="{{ author.homepage }}" target="_blank" class="text-blue-500 underline">Homepage</a></p>
+                <p><i class="fas fa-home text-gray-500 mr-2"></i><a href="{{ author.homepage }}" target="_blank" class="text-blue-500 hover:underline">Homepage</a></p>
                 {% endif %}
-                <p><a href="{{ author.url }}" target="_blank" class="text-blue-500 underline">Semantic Scholar Profile</a></p>
+                <p><i class="fas fa-external-link-alt text-gray-500 mr-2"></i><a href="{{ author.url }}" target="_blank" class="text-blue-500 hover:underline">Semantic Scholar Profile</a></p>
               </div>
             </div>
             {% endfor %}
           </div>
 
           <!-- Publication info with hover for more details -->
-          <div class="text-sm text-gray-600 mb-2">
+          <div class="text-sm text-gray-600 mb-4">
             <span
-              class="cursor-help border-b border-dotted border-gray-400"
-              title="Citations, h-index, etc"
+              class="cursor-help border-b border-dotted border-gray-400 inline-flex items-center"
+              title="Publication date"
             >
-              Published: {{ paper.published_date.strftime('%B %d, %Y') if paper.published_date else
-              'N/A' }}
+              <i class="fas fa-calendar-alt mr-2 text-gray-500"></i>
+              Published: {{ paper.published_date.strftime('%B %d, %Y') if paper.published_date else 'N/A' }}
             </span>
             {% if paper.doi %}
-            <span class="ml-4">DOI: {{ paper.doi }}</span>
+            <span class="ml-4 inline-flex items-center">
+              <i class="fas fa-fingerprint mr-2 text-gray-500"></i>
+              DOI: <a href="https://doi.org/{{ paper.doi }}" target="_blank" class="ml-1 text-blue-600 hover:underline">{{ paper.doi }}</a>
+            </span>
+            {% endif %}
+
+            <!-- Citation count if available -->
+            {% if paper.citation_count is defined %}
+            <span class="ml-4 inline-flex items-center">
+              <i class="fas fa-quote-right mr-2 text-gray-500"></i>
+              Citations: {{ paper.citation_count }}
+            </span>
             {% endif %}
           </div>
         </div>
@@ -84,26 +109,37 @@
           <div class="w-full md:w-2/3 p-6">
             <!-- Abstract section -->
             <div class="mb-8">
-              <h2 class="text-xl font-semibold text-blue-700 mb-3">Abstract</h2>
-              <div id="abstract-content" class="text-gray-700 leading-relaxed markdown-content">{{ paper.summary }}</div>
+              <h2 class="section-title text-xl"><i class="fas fa-scroll mr-2 opacity-70"></i>Abstract</h2>
+              <div id="abstract-content" class="abstract-container markdown-content">{{ paper.summary }}</div>
             </div>
 
-            <!-- PDF link button -->
-            <div class="mb-8">
+            <!-- Action buttons -->
+            <div class="mb-8 flex flex-wrap gap-3">
               <a
                 href="{{ paper.pdf_link }}"
                 target="_blank"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded inline-flex items-center"
+                class="action-button"
               >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="currentColor"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
-                </svg>
+                <i class="fas fa-file-pdf mr-2"></i>
                 <span>PDF Paper</span>
+              </a>
+
+              <a
+                href="#"
+                class="action-button bg-green-700 hover:bg-green-800"
+                onclick="alert('Citation copied to clipboard!'); return false;"
+              >
+                <i class="fas fa-quote-right mr-2"></i>
+                <span>Cite This Paper</span>
+              </a>
+
+              <a
+                href="#"
+                class="action-button bg-purple-700 hover:bg-purple-800"
+                onclick="alert('Feature coming soon!'); return false;"
+              >
+                <i class="fas fa-podcast mr-2"></i>
+                <span>Generate Podcast</span>
               </a>
             </div>
 
@@ -111,7 +147,7 @@
 
             <!-- Citations section -->
             <div>
-              <h2 class="text-xl font-semibold text-blue-700 mb-3">Citations</h2>
+              <h2 class="section-title text-xl"><i class="fas fa-quote-left mr-2 opacity-70"></i>Citations</h2>
 
               <!-- Citation visualization (placeholder) -->
               <div class="mb-4">
@@ -125,10 +161,10 @@
 
               <!-- Citation table -->
               <div>
-              <div class="text-sm text-gray-500 mb-2">Citations Table</div>
-              <div class="overflow-x-auto">
-              <div class="overflow-y-auto" style="max-height: 500px;"> <!-- Adjust height as needed -->
-                <table class="min-w-full border-collapse">
+              <div class="table-header">Citations</div>
+              <div class="table-container">
+              <div class="table-content"> <!-- Adjust height as needed -->
+                <table class="data-table">
                   <thead class="sticky top-0">
                     <tr class="bg-gray-100">
                       <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Title</th>
@@ -140,7 +176,7 @@
                     {% for citation in citations_info %}
                       <tr class="hover:bg-gray-50">
                         <td class="py-2 px-3 text-sm text-blue-600">
-                          <a href="{% if citation.citingPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ citation.citingPaper.externalIds.ArXiv }}{% else %}{{ citation.citingPaper.url }}{% endif %}" target="_blank">
+                          <a class="paper-link" href="{% if citation.citingPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ citation.citingPaper.externalIds.ArXiv }}{% else %}{{ citation.citingPaper.url }}{% endif %}" target="_blank">
                             {{ citation.citingPaper.title }}
                           </a>
                         </td>
@@ -164,7 +200,7 @@
 
             <!-- References section -->
             <div>
-              <h2 class="text-xl font-semibold text-blue-700 mb-3">References</h2>
+              <h2 class="section-title text-xl"><i class="fas fa-book mr-2 opacity-70"></i>References</h2>
 
               <!-- References visualization (placeholder) -->
               <div class="mb-4">
@@ -178,11 +214,11 @@
 
               <!-- References table -->
               <div>
-  <div class="text-sm text-gray-500 mb-2">References Table</div>
-  <div class="overflow-x-auto">
-    <div class="overflow-y-auto" style="max-height: 500px;"> <!-- Adjust height as needed -->
-      <table class="min-w-full border-collapse">
-        <thead class="sticky top-0 bg-gray-100"> <!-- Added sticky and bg-color -->
+  <div class="table-header">References</div>
+  <div class="table-container">
+    <div class="table-content"> <!-- Adjust height as needed -->
+      <table class="data-table">
+        <thead>
           <tr>
             <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
               Title
@@ -199,7 +235,7 @@
           {% for reference in references_info %}
             <tr class="hover:bg-gray-50">
               <td class="py-2 px-3 text-sm text-blue-600">
-                <a href="{% if reference.citedPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ reference.citedPaper.externalIds.ArXiv }}{% else %}{{ reference.citedPaper.url }}{% endif %}" target="_blank">
+                <a class="paper-link" href="{% if reference.citedPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ reference.citedPaper.externalIds.ArXiv }}{% else %}{{ reference.citedPaper.url }}{% endif %}" target="_blank">
                   {{ reference.citedPaper.title }}
                 </a>
               </td>
@@ -224,15 +260,15 @@
 
             <!-- Recommended papers section -->
             <div>
-              <h2 class="text-xl font-semibold text-blue-700 mb-3">Recommended Papers</h2>
+              <h2 class="section-title text-xl"><i class="fas fa-lightbulb mr-2 opacity-70"></i>Recommended Papers</h2>
 
               <!-- Recommended Papers table -->
               <div>
-  <div class="text-sm text-gray-500 mb-2">Recommended Papers Table</div>
-  <div class="overflow-x-auto">
-    <div class="overflow-y-auto" style="max-height: 500px;"> <!-- Adjust height as needed -->
-      <table class="min-w-full border-collapse">
-        <thead class="sticky top-0 bg-gray-100"> <!-- Added sticky and bg-color -->
+  <div class="table-header">Recommended Papers</div>
+  <div class="table-container">
+    <div class="table-content"> <!-- Adjust height as needed -->
+      <table class="data-table">
+        <thead>
           <tr>
             <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
               Title
@@ -249,7 +285,7 @@
           {% for paper in recommended_papers %}
             <tr class="hover:bg-gray-50">
               <td class="py-2 px-3 text-sm text-blue-600">
-                <a href="{% if paper.externalIds.ArXiv %}http://localhost:8000/abs/{{ paper.externalIds.ArXiv }}{% else %}{{ paper.url }}{% endif %}" target="_blank">
+                <a class="paper-link" href="{% if paper.externalIds.ArXiv %}http://localhost:8000/abs/{{ paper.externalIds.ArXiv }}{% else %}{{ paper.url }}{% endif %}" target="_blank">
                   {{ paper.title }}
                 </a>
               </td>
@@ -274,6 +310,8 @@
 
           <!-- Right column: Chat assistant -->
           <div class="w-full md:w-1/3 p-6 border-t md:border-t-0 md:border-l border-blue-100">
+            <h2 class="section-title text-xl mb-4"><i class="fas fa-robot mr-2 opacity-70"></i>AI Research Assistant</h2>
+            <div class="chat-container">
             {% include "components/chat.html" %}
           </div>
         </div>
@@ -287,6 +325,18 @@
         if (abstractContent) {
           renderLatexOnly(abstractContent);
         }
+
+        // Add academic paper metadata
+        document.querySelectorAll('.table-container').forEach(container => {
+          const tableHeader = container.querySelector('.table-header');
+          if (tableHeader) {
+            const count = container.querySelectorAll('tbody tr').length;
+            const countBadge = document.createElement('span');
+            countBadge.className = 'float-right text-xs bg-blue-100 text-blue-800 py-1 px-2 rounded-full';
+            countBadge.textContent = `${count} items`;
+            tableHeader.appendChild(countBadge);
+          }
+        });
       });
     </script>
   </body>
