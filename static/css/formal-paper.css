@@ -268,12 +268,8 @@ body {
 
 /* Chat container */
 .chat-container {
-  background-color: var(--light-accent);
-  border-radius: 0.5rem;
-  padding: 1.25rem;
-  height: 100%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--border-color);
+  height: 450px;
+  padding: 1px;
 }
 
 /* Responsive adjustments */

@@ -49,6 +49,7 @@ def create_gemini_chat(doc: types.File, model: str = "gemini-2.0-flash-lite") ->
         "When asked about the paper, focus on explaining the key ideas, methodology, results, and implications. "
         "If you're unsure about something, acknowledge the limitations of your understanding rather than making up information."
         "Do not answer unrelated questions that are not about the paper or any relevant fields."
+        "You can write in markdown and should include latex equations, but do not surround the latex with backticks. For example, write $x_i$, NOT `x_i` or `$x_i$`."
     )
 
     # Create history
