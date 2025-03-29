@@ -1,10 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ paper.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+      <!-- Main paper container with border -->
+      <div class="border border-blue-200 rounded-lg overflow-hidden shadow-lg bg-white">
+        <!-- Paper header section -->
+        <div class="p-6 border-b border-blue-100">
+          <!-- Title -->
+          <h1 class="text-2xl font-bold text-blue-800 mb-4">{{ paper.title }}</h1>
 
-</body>
+          <!-- Authors -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            {% for author in paper.authors %}
+            <div class="inline-block">
+              <span class="text-blue-600 border border-blue-300 rounded-full px-3 py-1 text-sm"
+                >{{ author }}</span
+              >
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Publication info with hover for more details -->
+          <div class="text-sm text-gray-600 mb-2">
+            <span
+              class="cursor-help border-b border-dotted border-gray-400"
+              title="Citations, h-index, etc"
+            >
+              Published: {{ paper.published_date.strftime('%B %d, %Y') if paper.published_date else
+              'N/A' }}
+            </span>
+            {% if paper.doi %}
+            <span class="ml-4">DOI: {{ paper.doi }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row">
+          <!-- Left column: Abstract and citations -->
+          <div class="w-full md:w-2/3 p-6">
+            <!-- Abstract section -->
+            <div class="mb-8">
+              <h2 class="text-xl font-semibold text-blue-700 mb-3">Abstract</h2>
+              <div class="text-gray-700 leading-relaxed">{{ paper.summary }}</div>
+            </div>
+
+            <!-- PDF link button -->
+            <div class="mb-8">
+              <a
+                href="{{ paper.pdf_link }}"
+                target="_blank"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded inline-flex items-center"
+              >
+                <svg
+                  class="w-4 h-4 mr-2"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+                </svg>
+                <span>PDF Paper</span>
+              </a>
+            </div>
+
+            <!-- Citations section -->
+            <div>
+              <h2 class="text-xl font-semibold text-blue-700 mb-3">Citations</h2>
+
+              <!-- Citation visualization (placeholder) -->
+              <div class="mb-4">
+                <div class="text-sm text-gray-500 mb-2">Citation Graph</div>
+                <div
+                  class="h-32 bg-gray-100 rounded flex items-center justify-center text-gray-400"
+                >
+                  Graph visualization would appear here
+                </div>
+              </div>
+
+              <!-- Citation table -->
+              <div>
+                <div class="text-sm text-gray-500 mb-2">Citation Table</div>
+                <div class="overflow-x-auto">
+                  <table class="min-w-full border-collapse">
+                    <thead>
+                      <tr class="bg-gray-100">
+                        <th
+                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+                        >
+                          Title
+                        </th>
+                        <th
+                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+                        >
+                          Year
+                        </th>
+                        <th
+                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+                        >
+                          Authors
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                      <!-- This would be populated with actual citation data -->
+                      <tr class="hover:bg-gray-50">
+                        <td class="py-2 px-3 text-sm text-blue-600">Example Citation Paper</td>
+                        <td class="py-2 px-3 text-sm">2023</td>
+                        <td class="py-2 px-3 text-sm">Author et al.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right column: Chat assistant -->
+          <div class="w-full md:w-1/3 p-6 border-t md:border-t-0 md:border-l border-blue-100">
+            <div class="bg-blue-50 rounded-lg p-4 h-full">
+              <h2 class="text-xl font-semibold text-blue-700 mb-3">Chat Assistant</h2>
+
+              <!-- Chat messages container -->
+              <div
+                class="bg-white rounded-lg border border-gray-200 p-3 h-96 mb-4 overflow-y-auto flex flex-col space-y-3"
+              >
+                <!-- Example messages -->
+                <div class="bg-gray-100 rounded-lg p-3 max-w-[80%] self-start">
+                  <p class="text-sm">How can I help you understand this paper?</p>
+                </div>
+
+                <div class="bg-blue-100 rounded-lg p-3 max-w-[80%] self-end">
+                  <p class="text-sm">Can you explain the key findings?</p>
+                </div>
+
+                <div class="bg-gray-100 rounded-lg p-3 max-w-[80%] self-start">
+                  <p class="text-sm">The main findings of this paper are...</p>
+                </div>
+              </div>
+
+              <!-- Chat input -->
+              <div class="flex">
+                <input
+                  type="text"
+                  placeholder="Ask about this paper..."
+                  class="flex-grow rounded-l-lg border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button class="bg-blue-600 hover:bg-blue-700 text-white rounded-r-lg px-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

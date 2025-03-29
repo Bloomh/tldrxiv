@@ -7,9 +7,7 @@ ach = arxiv.Client()
 def get_paper_info(arxiv_id: str):
     """Get information about a paper from its arXiv ID."""
     try:
-        paper_id = "ARXIV:" + arxiv_id
-
-        search = arxiv.Search(id_list=[paper_id])
+        search = arxiv.Search(id_list=[arxiv_id])
 
         for result in ach.results(search):
             paper = result
