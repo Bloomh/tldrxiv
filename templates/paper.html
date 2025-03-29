@@ -310,10 +310,12 @@
 
           <!-- Right column: Chat assistant -->
           <div class="w-full md:w-2/5 p-6 border-t md:border-t-0 md:border-l border-blue-100">
-            <h2 class="section-title text-xl mb-4"><i class="fas fa-robot mr-2 opacity-70"></i>AI Research Assistant</h2>
-            <div class="chat-container">
-            {% include "components/chat.html" %}
-          </div>
+            <div class="md:sticky" style="position: -webkit-sticky; position: sticky; top: 1rem; align-self: flex-start; height: auto;">
+              <h2 class="section-title text-xl mb-4"><i class="fas fa-robot mr-2 opacity-70"></i>AI Research Assistant</h2>
+              <div class="chat-container">
+              {% include "components/chat.html" %}
+            </div>
+            </div>
         </div>
       </div>
     </div>
