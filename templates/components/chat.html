@@ -1,29 +1,115 @@
 <!-- Chat component -->
-<div class="bg-blue-50 rounded-lg p-4 h-full">
+<div class="bg-blue-50 rounded-lg p-4 h-full flex flex-col">
+  <!-- Add KaTeX and marked.js libraries -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
+    crossorigin="anonymous"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+    integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+    crossorigin="anonymous"
+  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+
+  <!-- Custom styles for chat messages with LaTeX and markdown -->
+  <style>
+    .chat-message {
+      line-height: 1.5;
+      overflow-wrap: break-word;
+    }
+
+    .chat-message p {
+      margin-bottom: 0.75rem;
+    }
+
+    .chat-message p:last-child {
+      margin-bottom: 0;
+    }
+
+    .chat-message code {
+      background-color: #f1f1f1;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+
+    .chat-message pre {
+      background-color: #f1f1f1;
+      padding: 0.75rem;
+      border-radius: 0.25rem;
+      overflow-x: auto;
+      margin-bottom: 0.75rem;
+    }
+
+    .chat-message pre code {
+      background-color: transparent;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    .chat-message ul,
+    .chat-message ol {
+      margin-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .chat-message ul {
+      list-style-type: disc;
+    }
+
+    .chat-message ol {
+      list-style-type: decimal;
+    }
+
+    .chat-message .katex-display {
+      margin: 0.5rem 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .chat-message a {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+  </style>
+
   <h2 class="text-xl font-semibold text-blue-700 mb-3">Chat Assistant</h2>
 
   <!-- Chat messages container -->
   <div
     id="chat-messages"
-    class="bg-white rounded-lg border border-gray-200 p-3 h-96 mb-4 overflow-y-auto flex flex-col space-y-3"
+    class="bg-white rounded-lg border border-gray-200 p-3 flex-grow mb-4 overflow-y-auto flex flex-col space-y-3"
   >
     <!-- Initial welcome message -->
-    <div class="bg-gray-100 rounded-lg p-3 max-w-[80%] self-start">
-      <p class="text-sm">I've reviewed the paper. What would you like to know about it?</p>
+    <div class="bg-gray-100 rounded-lg p-3 max-w-[90%] self-start">
+      <div class="text-sm chat-message">
+        I've reviewed the paper. What would you like to know about it?
+      </div>
     </div>
   </div>
 
   <!-- Chat input -->
-  <form id="chat-form" class="flex">
+  <form id="chat-form" class="flex w-full">
     <input
       type="text"
       id="chat-input"
       name="message"
       placeholder="Ask about this paper..."
-      class="flex-grow rounded-l-lg border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      class="flex-grow rounded-l-lg border border-gray-300 py-3 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
       required
     />
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded-r-lg px-4">
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded-r-lg px-5 py-3">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="h-5 w-5"
@@ -40,7 +126,13 @@
 
 <!-- Chat JavaScript -->
 <script>
+  // Initialize the chat when the page loads
   document.addEventListener('DOMContentLoaded', () => {
+    // Render LaTeX in the initial welcome message
+    setTimeout(() => {
+      const welcomeMessage = document.querySelector('.chat-message');
+      if (welcomeMessage) renderMath(welcomeMessage);
+    }, 500); // Give KaTeX time to load
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
     const chatMessages = document.getElementById('chat-messages');
@@ -49,16 +141,51 @@
     console.log('Chat component initialized');
     console.log('Paper ID:', paperId);
 
+    // Function to render LaTeX in an element
+    function renderMath(element) {
+      // Ensure the KaTeX auto-render function is available
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(element, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true },
+          ],
+          throwOnError: false,
+        });
+      } else {
+        // If KaTeX isn't loaded yet, try again in a moment
+        setTimeout(() => renderMath(element), 100);
+      }
+    }
+
+    // Configure marked.js to handle LaTeX properly
+    marked.use({
+      mangle: false,
+      headerIds: false,
+      breaks: true,
+    });
+
     // Function to add a message to the chat
     function addMessage(text, isUser = false) {
       const messageDiv = document.createElement('div');
       messageDiv.className = isUser
-        ? 'bg-blue-100 rounded-lg p-3 max-w-[80%] self-end'
-        : 'bg-gray-100 rounded-lg p-3 max-w-[80%] self-start';
+        ? 'bg-blue-100 rounded-lg p-3 max-w-[90%] self-end'
+        : 'bg-gray-100 rounded-lg p-3 max-w-[90%] self-start';
 
-      const messagePara = document.createElement('p');
-      messagePara.className = 'text-sm';
-      messagePara.textContent = text;
+      const messagePara = document.createElement('div');
+      messagePara.className = 'text-sm chat-message';
+
+      if (isUser) {
+        // For user messages, just use text
+        messagePara.textContent = text;
+      } else {
+        // For AI messages, render markdown and LaTeX
+        messagePara.innerHTML = marked.parse(text);
+        // Render LaTeX after markdown is processed
+        renderMath(messagePara);
+      }
 
       messageDiv.appendChild(messagePara);
       chatMessages.appendChild(messageDiv);
@@ -75,10 +202,10 @@
 
       // Create a placeholder for the assistant's response
       const messageDiv = document.createElement('div');
-      messageDiv.className = 'bg-gray-100 rounded-lg p-3 max-w-[80%] self-start';
+      messageDiv.className = 'bg-gray-100 rounded-lg p-3 max-w-[90%] self-start';
 
-      const messagePara = document.createElement('p');
-      messagePara.className = 'text-sm';
+      const messagePara = document.createElement('div');
+      messagePara.className = 'text-sm chat-message';
       messageDiv.appendChild(messagePara);
       chatMessages.appendChild(messageDiv);
 
@@ -94,15 +221,17 @@
           const chunk = decoder.decode(value, { stream: true });
           responseText += chunk;
 
-          // Update the message with the current text
-          messagePara.textContent = responseText;
+          // Update the message with the current text, rendered as markdown with LaTeX
+          messagePara.innerHTML = marked.parse(responseText);
+          renderMath(messagePara);
 
           // Scroll to bottom of chat
           chatMessages.scrollTop = chatMessages.scrollHeight;
         }
       } catch (error) {
         console.error('Error reading stream:', error);
-        messagePara.textContent = 'Error: Could not load response.';
+        messagePara.innerHTML =
+          '<span class="text-red-500">Error: Could not load response.</span>';
       }
     }
 
