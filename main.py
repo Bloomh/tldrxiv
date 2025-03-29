@@ -12,6 +12,7 @@ import uvicorn
 
 # Importing our utils
 from utils.arxiv_utils import get_paper_info, download_paper_pdf
+from utils.sem_scholar_utils import get_paper_authors_info, get_paper_citations, get_paper_references, get_recommended_papers
 
 load_dotenv()
 
@@ -73,12 +74,20 @@ async def read_item(request: Request, id: str, format: str = None):
     # Create PDF embed URL - using the same endpoint with format=pdf
     pdf_embed_url = f"/abs/{id}?format=pdf"
 
+    authors_info = get_paper_authors_info(id)
+    citations_info = get_paper_citations(id)
+    references_info = get_paper_references(id)
+    # recommended_papers = get_recommended_papers(id)
+
     # Return the HTML template with paper data
     return templates.TemplateResponse(
         "paper.html",
         {
             "request": request,
             "paper": paper,
+            "authors_info": authors_info,
+            "citations_info": citations_info,
+            "references_info": references_info,
             "pdf_embed_url": pdf_embed_url
         }
     )

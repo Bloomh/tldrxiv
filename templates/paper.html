@@ -17,11 +17,22 @@
 
           <!-- Authors -->
           <div class="flex flex-wrap gap-2 mb-4">
-            {% for author in paper.authors %}
-            <div class="inline-block">
-              <span class="text-blue-600 border border-blue-300 rounded-full px-3 py-1 text-sm"
-                >{{ author }}</span
-              >
+            {% for author in authors_info %}
+            <div class="relative inline-block group">
+              <span class="text-blue-600 border border-blue-300 rounded-full px-3 py-1 text-sm cursor-pointer">
+                {{ author.name }}
+              </span>
+              <!-- Popup -->
+              <div class="absolute hidden group-hover:block bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10">
+                <p><strong>Affiliations:</strong> {{ author.affiliations | join(', ') }}</p>
+                <p><strong>Papers:</strong> {{ author.paperCount }}</p>
+                <p><strong>Citations:</strong> {{ author.citationCount }}</p>
+                <p><strong>hIndex:</strong> {{ author.hIndex }}</p>
+                {% if author.homepage %}
+                <p><a href="{{ author.homepage }}" target="_blank" class="text-blue-500 underline">Homepage</a></p>
+                {% endif %}
+                <p><a href="{{ author.url }}" target="_blank" class="text-blue-500 underline">Semantic Scholar Profile</a></p>
+              </div>
             </div>
             {% endfor %}
           </div>
@@ -108,17 +119,95 @@
                       </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                      <!-- This would be populated with actual citation data -->
-                      <tr class="hover:bg-gray-50">
-                        <td class="py-2 px-3 text-sm text-blue-600">Example Citation Paper</td>
-                        <td class="py-2 px-3 text-sm">2023</td>
-                        <td class="py-2 px-3 text-sm">Author et al.</td>
-                      </tr>
+                      {% for citation in citations_info %}
+                        <tr class="hover:bg-gray-50">
+                          <td class="py-2 px-3 text-sm text-blue-600">
+                            <a href="{% if citation.citingPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ citation.citingPaper.externalIds.ArXiv }}{% else %}{{ citation.citingPaper.url }}{% endif %}" target="_blank">
+                              {{ citation.citingPaper.title }}
+                            </a>
+                          </td>
+                          <td class="py-2 px-3 text-sm">{{ citation.citingPaper.year }}</td>
+                          <td class="py-2 px-3 text-sm">
+                            {% set authors = citation.citingPaper.authors %}
+                            {% if authors|length > 3 %}
+                              {{ authors[:3] | map(attribute='name') | join(', ') }}, ...
+                            {% else %}
+                              {{ authors | map(attribute='name') | join(', ') }}
+                            {% endif %}
+                          </td>
+                        </tr>
+                      {% endfor %}
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
+
+            <!-- Graph Visualization Section: ARNAV ADDED -->
+
+            <!-- References section -->
+            <div>
+              <h2 class="text-xl font-semibold text-blue-700 mb-3">References</h2>
+
+              <!-- References visualization (placeholder) -->
+              <div class="mb-4">
+                <div class="text-sm text-gray-500 mb-2">References Graph</div>
+                <div
+                  class="h-32 bg-gray-100 rounded flex items-center justify-center text-gray-400"
+                >
+                  Graph visualization would appear here
+                </div>
+              </div>
+
+              <!-- References table -->
+              <div>
+                <div class="text-sm text-gray-500 mb-2">References Table</div>
+                <div class="overflow-x-auto">
+                  <table class="min-w-full border-collapse">
+                    <thead>
+                      <tr class="bg-gray-100">
+                        <th
+                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+                        >
+                          Title
+                        </th>
+                        <th
+                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+                        >
+                          Year
+                        </th>
+                        <th
+                          class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+                        >
+                          Authors
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                      {% for reference in references_info %}
+                        <tr class="hover:bg-gray-50">
+                          <td class="py-2 px-3 text-sm text-blue-600">
+                            <a href="{% if reference.citedPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ reference.citedPaper.externalIds.ArXiv }}{% else %}{{ reference.citedPaper.url }}{% endif %}" target="_blank">
+                              {{ reference.citedPaper.title }}
+                            </a>
+                          </td>
+                          <td class="py-2 px-3 text-sm">{{ reference.citedPaper.year }}</td>
+                          <td class="py-2 px-3 text-sm">
+                            {% set authors = reference.citedPaper.authors %}
+                            {% if authors|length > 3 %}
+                              {{ authors[:3] | map(attribute='name') | join(', ') }}, ...
+                            {% else %}
+                              {{ authors | map(attribute='name') | join(', ') }}
+                            {% endif %}
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           <!-- Right column: Chat assistant -->
