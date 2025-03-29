@@ -10,6 +10,7 @@ load_dotenv()
 
 client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
 
+
 def gemini_upload_file(pdf_url: str) -> types.Document:
     """
     Upload a PDF file to Gemini
@@ -27,6 +28,7 @@ def gemini_upload_file(pdf_url: str) -> types.Document:
     )
 
     return document
+
 
 def create_gemini_chat(doc: types.Document, model: str = "gemini-2.0-flash-lite") -> types.Chat:
     """

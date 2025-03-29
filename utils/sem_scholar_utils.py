@@ -7,6 +7,8 @@ import arxiv
 ss_api_key = os.getenv("SEMANTIC_SCHOLAR_API_KEY")
 client = arxiv.Client()
 sch = SemanticScholar(api_key=ss_api_key)
+
+
 def get_recommended_papers(arxiv_id: str, limit: int = 5):
     """Get recommended papers based on the given paper ID."""
     paper_id = "ARXIV:" + arxiv_id
@@ -30,14 +32,20 @@ def get_recommended_papers(arxiv_id: str, limit: int = 5):
     }
 
 
-def get_paper_authors(arxiv_id: str, limit: int = 5):
-    """Get information about an author from the given paper ID and author name."""
+def get_paper_authors_info(arxiv_id: str, limit: int = 5):
+    """Get a list of authors and their information for a given paper ID."""
     paper_id = "ARXIV:" + arxiv_id
 
     # Get the author information
-    author_info = sch.get_paper_authors(paper_id, limit=limit)
+    authors = sch.get_paper_authors(paper_id)
+
+    # get the information for each author
+    author_ids = [author.authorId for author in authors[:limit]]
+    author_fields = ["name", "url", "affiliations", "homepage", "paperCount", "citationCount", "hIndex"]
+    author_info = sch.get_authors(author_ids, fields=author_fields)
 
     return author_info
+
 
 def get_paper_citations(arxiv_id: str):
     """Get information about the citations for a given paper ID."""
@@ -47,6 +55,7 @@ def get_paper_citations(arxiv_id: str):
     citation_info = sch.get_paper_citations(paper_id)
 
     return citation_info
+
 
 def get_paper_references(arxiv_id: str):
     """Get information about the references for a given paper ID."""
