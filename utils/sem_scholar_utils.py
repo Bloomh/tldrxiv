@@ -13,23 +13,10 @@ def get_recommended_papers(arxiv_id: str, limit: int = 5):
     """Get recommended papers based on the given paper ID."""
     paper_id = "ARXIV:" + arxiv_id
 
-    # Get the paper details
-    paper = sch.get_paper(paper_id)
-
-    if not paper:
-        # TODO: return an error screen
-        return {"error": "Paper not found"}
-
-    # Get the paper title
-    title = paper.get("title", "Unknown Title")
-
     # Get the recommended papers
     recommended_papers = sch.get_recommended_papers(paper_id, limit=limit)
 
-    return {
-        "title": title,
-        "recommended_papers": recommended_papers
-    }
+    return recommended_papers
 
 
 def get_paper_authors_info(arxiv_id: str, limit: int = 5):

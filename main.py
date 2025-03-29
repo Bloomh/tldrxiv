@@ -90,7 +90,9 @@ async def process_paper(request: Request, id: str, format: str = None):
     authors_info = get_paper_authors_info(id)
     citations_info = get_paper_citations(id)
     references_info = get_paper_references(id)
-    # recommended_papers = get_recommended_papers(id)
+    recommended_papers = get_recommended_papers(id)
+
+    print("Recommended papers:", recommended_papers)
 
     # Return the HTML template with paper data
     return templates.TemplateResponse(
@@ -101,6 +103,7 @@ async def process_paper(request: Request, id: str, format: str = None):
             "authors_info": authors_info,
             "citations_info": citations_info,
             "references_info": references_info,
+            "recommended_papers": recommended_papers,
             "pdf_embed_url": pdf_embed_url
         }
     )
