@@ -1,99 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TLDRxiv - AI-Powered Research Paper Summaries</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/static/css/formal-paper.css">
+    <link rel="stylesheet" href="/static/css/formal-paper.css" />
     <!-- Font imports for formal styling -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body class="bg-gray-50">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="bg-gray-50">
     <div class="container mx-auto px-4 py-12 max-w-6xl">
-        <!-- Header -->
-        <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-blue-900">TLDRxiv</h1>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">AI-powered research paper summaries and interactive discussions</p>
-        </header>
+      <!-- Header -->
+      <header class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-blue-900">TLDRxiv</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          AI-powered research paper summaries and interactive discussions
+        </p>
+      </header>
 
-        <!-- Search Box -->
-        <div class="max-w-2xl mx-auto mb-16">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Explore Research Papers</h2>
-                <form action="/search" method="get" class="space-y-4">
-                    <div>
-                        <label for="paper-id" class="block text-sm font-medium text-gray-700 mb-1">Enter arXiv ID or URL</label>
-                        <div class="flex">
-                            <input 
-                                type="text" 
-                                id="paper-id" 
-                                name="q" 
-                                placeholder="e.g., 2307.09288 or arxiv.org/abs/2307.09288" 
-                                class="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500"
-                                required
-                            >
-                            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-r-md hover:bg-blue-700 transition">
-                                <i class="fas fa-search mr-2"></i>View
-                            </button>
-                        </div>
-                        <p class="text-sm text-gray-500 mt-2">Enter an arXiv paper ID or full URL to view its summary and chat with an AI assistant about it.</p>
-                    </div>
-                </form>
+      <!-- Search Box -->
+      <div class="max-w-2xl mx-auto mb-16">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800">Explore Research Papers</h2>
+          <form action="/search" method="get" class="space-y-4">
+            <div>
+              <label for="paper-id" class="block text-sm font-medium text-gray-700 mb-1"
+                >Enter arXiv ID or URL</label
+              >
+              <div class="flex">
+                <input
+                  type="text"
+                  id="paper-id"
+                  name="q"
+                  placeholder="e.g., 2307.09288 or arxiv.org/abs/2307.09288"
+                  class="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="submit"
+                  class="bg-blue-600 text-white px-6 py-2 rounded-r-md hover:bg-blue-700 transition"
+                >
+                  <i class="fas fa-search mr-2"></i>View
+                </button>
+              </div>
+              <p class="text-sm text-gray-500 mt-2">
+                Enter an arXiv paper ID or full URL to view its summary and chat with an AI
+                assistant about it.
+              </p>
             </div>
+          </form>
         </div>
+      </div>
 
-        <!-- Features Section -->
-        <div class="grid md:grid-cols-3 gap-8 mb-16">
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <div class="text-blue-600 text-3xl mb-4">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <h3 class="text-lg font-semibold mb-2">AI Research Assistant</h3>
-                <p class="text-gray-600">Chat with an AI assistant that understands the paper and can answer your specific questions.</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <div class="text-blue-600 text-3xl mb-4">
-                    <i class="fas fa-scroll"></i>
-                </div>
-                <h3 class="text-lg font-semibold mb-2">Concise Summaries</h3>
-                <p class="text-gray-600">Get the key points and insights from complex research papers without reading the entire document.</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <div class="text-blue-600 text-3xl mb-4">
-                    <i class="fas fa-network-wired"></i>
-                </div>
-                <h3 class="text-lg font-semibold mb-2">Related Research</h3>
-                <p class="text-gray-600">Discover related papers and citations to expand your research exploration.</p>
-            </div>
+      <!-- Features Section -->
+      <div class="grid md:grid-cols-3 gap-8 mb-16">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="text-blue-600 text-3xl mb-4">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">AI Research Assistant</h3>
+          <p class="text-gray-600">
+            Chat with an AI assistant that understands the paper and can answer your specific
+            questions.
+          </p>
         </div>
-
-        <!-- Recent Papers Section -->
-        <div class="mb-16">
-            <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800">Example Papers</h2>
-            <div class="grid md:grid-cols-2 gap-6">
-                <a href="/abs/2307.09288" class="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
-                    <h3 class="text-lg font-semibold mb-2 text-blue-800 hover:text-blue-600">Llama 2: Open Foundation and Fine-Tuned Chat Models</h3>
-                    <p class="text-sm text-gray-500 mb-2">Hugo Touvron, Louis Martin, Kevin Stone, et al.</p>
-                    <p class="text-gray-600 line-clamp-3">We introduce Llama 2, a collection of pretrained and fine-tuned large language models (LLMs) ranging in scale from 7 billion to 70 billion parameters...</p>
-                </a>
-                <a href="/abs/2303.08774" class="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
-                    <h3 class="text-lg font-semibold mb-2 text-blue-800 hover:text-blue-600">GPT-4 Technical Report</h3>
-                    <p class="text-sm text-gray-500 mb-2">OpenAI</p>
-                    <p class="text-gray-600 line-clamp-3">We report the development of GPT-4, a large-scale, multimodal model which can accept image and text inputs and produce text outputs...</p>
-                </a>
-            </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="text-blue-600 text-3xl mb-4">
+            <i class="fas fa-scroll"></i>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Concise Summaries</h3>
+          <p class="text-gray-600">
+            Get the key points and insights from complex research papers without reading the entire
+            document.
+          </p>
         </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="text-blue-600 text-3xl mb-4">
+            <i class="fas fa-network-wired"></i>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Related Research</h3>
+          <p class="text-gray-600">
+            Discover related papers and citations to expand your research exploration.
+          </p>
+        </div>
+      </div>
 
-        <!-- Footer -->
-        <footer class="text-center text-gray-500 text-sm pt-8 border-t border-gray-200">
-            <p>© 2025 TLDRxiv. All rights reserved.</p>
-            <p class="mt-2">Powered by arXiv, Semantic Scholar, and Google's Gemini API.</p>
-        </footer>
+      <!-- Recent Papers Section -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800">Example Papers</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <a
+            href="/abs/2307.09288"
+            class="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition"
+          >
+            <h3 class="text-lg font-semibold mb-2 text-blue-800 hover:text-blue-600">
+              Llama 2: Open Foundation and Fine-Tuned Chat Models
+            </h3>
+            <p class="text-sm text-gray-500 mb-2">
+              Hugo Touvron, Louis Martin, Kevin Stone, et al.
+            </p>
+            <p class="text-gray-600 line-clamp-3">
+              In this work, we develop and release Llama 2, a collection of pretrained and
+              fine-tuned large language models (LLMs) ranging in scale from 7 billion to 70 billion
+              parameters...
+            </p>
+          </a>
+          <a
+            href="/abs/1706.03762"
+            class="block bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition"
+          >
+            <h3 class="text-lg font-semibold mb-2 text-blue-800 hover:text-blue-600">
+              Attention Is All You Need
+            </h3>
+            <p class="text-sm text-gray-500 mb-2">
+              Ashish Vaswani, Noam Shazeer, Niki Parmar, et al.
+            </p>
+            <p class="text-gray-600 line-clamp-3">
+              The dominant sequence transduction models are based on complex recurrent or
+              convolutional neural networks that include an encoder and a decoder. The best
+              performing models also connect the encoder and decoder through an attention
+              mechanism. We propose a new simple network architecture, the Transformer, based
+              solely on attention mechanisms...
+            </p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="text-center text-gray-500 text-sm pt-8 border-t border-gray-200">
+        <p>© 2025 TLDRxiv. All rights reserved.</p>
+        <p class="mt-2">Powered by arXiv, Semantic Scholar, and Google's Gemini API.</p>
+      </footer>
     </div>
-</body>
+  </body>
 </html>
