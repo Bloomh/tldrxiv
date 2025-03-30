@@ -149,11 +149,15 @@
               <a
                 href="#"
                 class="action-button bg-green-700 hover:bg-green-800"
-                onclick="alert('Citation copied to clipboard!'); return false;"
+                onclick="copyBibTexCitation(); return false;"
+                id="cite-button"
               >
                 <i class="fas fa-quote-right mr-2"></i>
                 <span>Cite This Paper</span>
               </a>
+
+              <!-- Hidden textarea for copying citation -->
+              <textarea id="citation-text" class="hidden">{{ paper.citation }}</textarea>
 
               <a
                 href="#"
@@ -278,6 +282,31 @@
     </script>
 
     <script>
+      // Function to copy BibTeX citation to clipboard
+      function copyBibTexCitation() {
+        const citationText = document.getElementById('citation-text').value;
+        const citeButton = document.getElementById('cite-button');
+        const originalButtonText = citeButton.innerHTML;
+
+        if (!citationText) {
+          showErrorNotification('Citation not available for this paper');
+          return;
+        }
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(citationText).then(() => {
+          // Show success feedback
+          citeButton.innerHTML = '<i class="fas fa-check mr-2"></i><span>Copied!</span>';
+
+          // Reset button after 2 seconds
+          setTimeout(() => {
+            citeButton.innerHTML = originalButtonText;
+          }, 2000);
+        }).catch(err => {
+          showErrorNotification('Failed to copy citation: ' + err);
+        });
+      }
+      
       async function generatePodcast(paperId) {
           const btn = document.getElementById('generate-podcast-button');
           btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Generating...`;

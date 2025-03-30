@@ -14,7 +14,7 @@ def get_ss_paper_info(arxiv_id: str):
     """
     paper_id = "ARXIV:" + arxiv_id
     # Only request the tldr field to minimize data transfer
-    paper_info = sch.get_paper(paper_id, fields=["tldr"]) # TODO: get citation
+    paper_info = sch.get_paper(paper_id, fields=["tldr", "citationStyles"])
 
     return paper_info
 
