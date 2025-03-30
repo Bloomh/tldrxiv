@@ -210,7 +210,9 @@ def get_paper_info(arxiv_id: str):
                 "pdf_link": paper.pdf_url,
                 "url": f"https://arxiv.org/abs/{arxiv_id}",
                 "tldr": ss_info.tldr.text if ss_info.tldr else "",
-                "citation": ss_info.citationStyles.get("bibtex", "") if ss_info.citationStyles else ""
+                "citation": ss_info.citationStyles.get("bibtex", "") if ss_info.citationStyles else "",
+                "reference_count": ss_info.referenceCount,
+                "citation_count": ss_info.citationCount
             }
     except Exception as e:
         return {"error": f"Error fetching paper: {str(e)}"}

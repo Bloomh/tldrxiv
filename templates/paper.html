@@ -174,7 +174,7 @@
             <div>
               <h2 class="section-title text-xl"><i class="fas fa-quote-left mr-2 opacity-70"></i>Citations</h2>
 
-              <!-- Citation visualization (placeholder) -->
+              <!-- Citation visualization (placeholder)
               <div class="mb-4">
                 <div class="text-sm text-gray-500 mb-2">Citation Graph</div>
                 <div
@@ -182,18 +182,18 @@
                 >
                   Graph visualization would appear here
                 </div>
-              </div>
+              </div> -->
 
               <!-- Citation table -->
               {% from "components/paper_table.html" import render_table %}
-              {{ render_table("Citations", citations_info, "citation") }}
+              {{ render_table("Citations", citations_info, "citation", paper) }}
               </div>
 
             <!-- References section -->
             <div>
               <h2 class="section-title text-xl"><i class="fas fa-book mr-2 opacity-70"></i>References</h2>
 
-              <!-- References visualization (placeholder) -->
+              <!-- References visualization (placeholder)
               <div class="mb-4">
                 <div class="text-sm text-gray-500 mb-2">References Graph</div>
                 <div
@@ -201,10 +201,10 @@
                 >
                   Graph visualization would appear here
                 </div>
-              </div>
+              </div> -->
 
               <!-- References table -->
-              {{ render_table("References", references_info, "reference") }}
+              {{ render_table("References", references_info, "reference", paper) }}
             </div>
 
 
@@ -213,15 +213,15 @@
               <h2 class="section-title text-xl"><i class="fas fa-lightbulb mr-2 opacity-70"></i>Recommended Papers</h2>
 
               <!-- Recommended Papers table -->
-              {{ render_table("Recommended Papers", recommended_papers, "recommended") }}
+              {{ render_table("Recommended Papers", recommended_papers, "recommended", paper) }}
             </div>
           </div>
 
           <!-- Right column: Chat assistant -->
           <div class="w-full md:w-2/5 p-6 border-t md:border-t-0 md:border-l border-blue-100">
-            <div class="md:sticky" style="position: -webkit-sticky; position: sticky; top: 1rem; align-self: flex-start; height: auto;">
+            <div class="md:sticky" style="position: -webkit-sticky; position: sticky; top: 1rem; align-self: flex-start; height: calc(100vh - 2rem);">
               <h2 class="section-title text-xl mb-4"><i class="fas fa-robot mr-2 opacity-70"></i>AI Research Assistant</h2>
-              <div class="chat-container">
+              <div class="chat-container h-[calc(100%-3rem)]">
               {% include "components/chat.html" %}
             </div>
             </div>
@@ -306,7 +306,7 @@
           showErrorNotification('Failed to copy citation: ' + err);
         });
       }
-      
+
       async function generatePodcast(paperId) {
           const btn = document.getElementById('generate-podcast-button');
           btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Generating...`;

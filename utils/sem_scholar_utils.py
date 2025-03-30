@@ -14,7 +14,7 @@ def get_ss_paper_info(arxiv_id: str):
     """
     paper_id = "ARXIV:" + arxiv_id
     # Only request the tldr field to minimize data transfer
-    paper_info = sch.get_paper(paper_id, fields=["tldr", "citationStyles"])
+    paper_info = sch.get_paper(paper_id, fields=["tldr", "citationStyles", "referenceCount", "citationCount"])
 
     return paper_info
 
@@ -55,7 +55,7 @@ def get_paper_authors_info(arxiv_id: str, limit: int = 100):
     return author_info
 
 
-def get_paper_citations(arxiv_id: str, limit: int = 20):
+def get_paper_citations(arxiv_id: str, limit: int = 100):
     """Get information about the citations for a given paper ID."""
     paper_id = "ARXIV:" + arxiv_id
 
@@ -75,7 +75,7 @@ def get_paper_citations(arxiv_id: str, limit: int = 20):
     return citation_info
 
 
-def get_paper_references(arxiv_id: str, limit: int = 20):
+def get_paper_references(arxiv_id: str, limit: int = 100):
     """Get information about the references for a given paper ID."""
     paper_id = "ARXIV:" + arxiv_id
 
