@@ -228,7 +228,6 @@ async def generate_podcast(request: Request,id: str):
 
         # Generate podcast
         audio_content = text_to_speech(podcast_script)
-
         return Response(
             audio_content,
             media_type="audio/mpeg",

@@ -84,6 +84,7 @@ def create_gemini_chat(doc: types.File, model: str = "gemini-2.0-flash-lite") ->
 
     return chat
 
+
 def gemini_ask_question(chat: Chat, prompt: str) -> Iterator[str]:
     """
     Ask a question to Gemini. Note that the response is a stream of text chunks.
@@ -99,3 +100,25 @@ def gemini_ask_question(chat: Chat, prompt: str) -> Iterator[str]:
 
     for chunk in response:
         yield chunk.text
+
+
+def generate_podcast_script(pdf_bytes: bytes, model_name="gemini-1.5-pro-latest") -> str:
+    """Generate podcast script from PDF content"""
+    print("Generating podcast script...")
+    pdf_file = gemini_upload_file(pdf_bytes)
+
+    prompt = """Create a 5-minute podcast script that summarizes this research paper for a general audience. 
+    Structure it with:
+    1. Introduction to the field
+    2. Key research question
+    3. Methodology overview
+    4. Main findings
+    5. Significance/implications
+    Use conversational language and include engaging segues."""
+
+    response = create_gemini_chat(pdf_file).send_message([
+        prompt
+    ])
+
+    return response.text
+
