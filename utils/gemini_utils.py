@@ -30,7 +30,7 @@ def gemini_upload_file(pdf_content: bytes) -> types.File:
     return document
 
 
-def create_gemini_chat(doc: types.File, model: str = "gemini-2.0-flash-lite") -> Chat:
+def create_gemini_chat(doc: types.File, context_message: str = "", model: str = "gemini-2.0-flash-lite") -> Chat:
     """
     Creates a chat with a faux history that includes file upload
 
@@ -72,6 +72,14 @@ def create_gemini_chat(doc: types.File, model: str = "gemini-2.0-flash-lite") ->
             parts=[types.Part(text="I've reviewed the document. What would you like to know?")]
         )
     )
+
+    if context_message:
+        history.append(
+            types.Content(
+                role="user",
+                parts=[types.Part(text=context_message)]
+            )
+        )
 
     # Create the chat
     chat = client.chats.create(

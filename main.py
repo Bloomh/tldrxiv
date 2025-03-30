@@ -109,11 +109,23 @@ async def process_paper(request: Request, id: str, format: str = None):
             media_type="application/pdf"
         )
 
+    references_info = get_paper_references(id)
+    references_abstracts = [reference.paper.abstract for reference in references_info if reference.paper.abstract is not None]
+    print(references_abstracts)
+    print("---")
+    
+    context_message = ""
+    if references_abstracts:
+        context_message = f"""Reference Context:
+                            This paper cites {len(references_abstracts)} related works. Here are their abstracts:
+                            ---
+                            """ + "\n\n---\n".join(references_abstracts)
+
     # Set up Gemini
     logger.info(f"Uploading PDF to Gemini API")
     gemini_document = gemini_upload_file(pdf_content)
     logger.info(f"Creating Gemini chat session")
-    chat = create_gemini_chat(gemini_document)
+    chat = create_gemini_chat(doc=gemini_document, context_message=context_message)
 
     # Store the chat for future use
     paper_chats[id] = {
@@ -126,7 +138,6 @@ async def process_paper(request: Request, id: str, format: str = None):
 
     authors_info = get_paper_authors_info(id)
     citations_info = get_paper_citations(id)
-    references_info = get_paper_references(id)
     recommended_papers = get_recommended_papers(id)
 
     # Return the HTML template with paper data
