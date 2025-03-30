@@ -7,6 +7,13 @@ client = arxiv.Client()
 sch = SemanticScholar(api_key=ss_api_key)
 
 
+def get_ss_paper_info(arxiv_id: str):
+    paper_id = "ARXIV:" + arxiv_id
+    paper_info = sch.get_paper(paper_id, fields=["tldr"])
+
+    return paper_info
+
+
 def get_recommended_papers(arxiv_id: str, limit: int = 5):
     """Get recommended papers based on the given paper ID."""
     paper_id = "ARXIV:" + arxiv_id

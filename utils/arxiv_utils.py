@@ -1,6 +1,8 @@
 import arxiv
 import httpx
 
+from .sem_scholar_utils import get_ss_paper_info
+
 ach = arxiv.Client()
 
 # Dictionary mapping arXiv category codes to their full names
@@ -193,8 +195,9 @@ def get_paper_info(arxiv_id: str):
     try:
         search = arxiv.Search(id_list=[arxiv_id])
 
-        for result in ach.results(search):
-            paper = result
+        for paper in ach.results(search):
+            # Get extra paper info from SemScholar
+            ss_info = get_ss_paper_info(arxiv_id)
 
             return {
                 "id": arxiv_id,
@@ -206,6 +209,7 @@ def get_paper_info(arxiv_id: str):
                 "doi": paper.doi,
                 "pdf_link": paper.pdf_url,
                 "url": f"https://arxiv.org/abs/{arxiv_id}",
+                "tldr": ss_info.tldr.text
             }
     except Exception as e:
         return {"error": f"Error fetching paper: {str(e)}"}
