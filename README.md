@@ -1,6 +1,6 @@
-# tldrXiv
+# TLDRxiv
 
-tldrXiv is your personal assistant for reading arXiv papers.
+TLDRxiv is your personal assistant for reading arXiv papers.
 
 ## Setup
 
