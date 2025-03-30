@@ -56,7 +56,7 @@ async def search(request: Request, q: str):
         # Assume it's already an ID
         id = q.strip()
         logger.info(f"Using provided ID: {id}")
-    
+
     # Redirect to the paper page
     from fastapi.responses import RedirectResponse
     logger.info(f"Redirecting to /abs/{id}")

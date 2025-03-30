@@ -21,7 +21,7 @@ def get_paper_info(arxiv_id: str):
                 "categories": paper.categories,
                 "doi": paper.doi,
                 "pdf_link": paper.pdf_url,
-                "url": f"https://arxiv.org/abs/{arxiv_id}"
+                "url": f"https://arxiv.org/abs/{arxiv_id}",
             }
     except Exception as e:
         return {"error": f"Error fetching paper: {str(e)}"}
