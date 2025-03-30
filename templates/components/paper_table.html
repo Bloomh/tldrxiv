@@ -47,6 +47,16 @@
             >
               Year
             </th>
+            <th
+              class="py-2 px-4 text-center text-xs font-medium text-gray-600 uppercase tracking-wider relative group cursor-help"
+            >
+              Citations
+              <div
+                class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded p-2 z-50 w-56 -left-16 top-8 shadow-lg overflow-visible"
+              >
+                Number of times this paper has been cited by other papers.
+              </div>
+            </th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -86,6 +96,7 @@
             </td>
             {% endif %}
             <td class="py-2 px-4 text-sm">{{ paper.year }}</td>
+            <td class="py-2 px-4 text-sm text-center">{{ paper.citationCount|default('—') }}</td>
           </tr>
           {% endfor %}
         </tbody>
