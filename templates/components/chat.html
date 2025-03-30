@@ -25,6 +25,30 @@
   <!-- Link to external CSS file for markdown and LaTeX styles -->
   <link rel="stylesheet" href="/static/css/markdown-latex-styles.css" />
 
+  <!-- Search result citation styles -->
+  <style>
+    .search-citation {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.5em;
+      height: 1.5em;
+      border-radius: 50%;
+      background-color: #3b82f6;
+      color: white;
+      font-size: 0.8em;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 0 0.2em;
+      vertical-align: super;
+      text-decoration: none;
+    }
+
+    .search-citation:hover {
+      background-color: #2563eb;
+    }
+  </style>
+
   <!-- Chat messages container -->
   <div
     id="chat-messages"
@@ -112,11 +136,110 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    // Search results for the current conversation
+    let searchResults = [];
+
+    // Function to process search result markers in the text
+    function processSearchResults(text) {
+      // Regular expression to match search result markers
+      const searchResultRegex = /__SEARCH_RESULT__([0-9]+):([^:]+):([^:]+):([^_]+)__/g;
+
+      // Replace all search result markers with citation numbers
+      let processedText = text;
+      let match;
+
+      while ((match = searchResultRegex.exec(text)) !== null) {
+        const [fullMatch, index, url, title, query] = match;
+
+        // Add to search results if not already present
+        if (!searchResults.some((r) => r.index === parseInt(index))) {
+          searchResults.push({
+            index: parseInt(index),
+            url: url,
+            title: title,
+            query: query,
+          });
+        }
+
+        // Replace the marker with an empty string (we'll add citations later)
+        processedText = processedText.replace(fullMatch, '');
+      }
+
+      return processedText;
+    }
+
+    // Function to add search result citations to the message
+    function addSearchCitations(element) {
+      console.log('Adding search citations to element:', element);
+      console.log('Current search results:', JSON.stringify(searchResults));
+
+      // Find all text nodes in the element
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+
+      // Get the last text node (where we'll add the citations)
+      let lastTextNode = null;
+      while (walker.nextNode()) {
+        lastTextNode = walker.currentNode;
+      }
+
+      console.log(
+        'Last text node found:',
+        lastTextNode ? lastTextNode.textContent.substring(0, 30) + '...' : 'None'
+      );
+
+      if (lastTextNode && searchResults.length > 0) {
+        console.log(`Adding ${searchResults.length} citations`);
+
+        // Create a span to hold the citations
+        const citationsSpan = document.createElement('span');
+        citationsSpan.className = 'search-citations';
+
+        // Add each citation
+        searchResults.forEach((result) => {
+          console.log(`Creating citation ${result.index} for URL: ${result.url}`);
+
+          const citation = document.createElement('a');
+          citation.className = 'search-citation';
+
+          // Use the URL as is - it should now be a redirect endpoint
+          let url = result.url;
+          console.log(`Using URL: ${url}`);
+
+          citation.href = url;
+          citation.target = '_blank';
+          citation.rel = 'noopener noreferrer';
+          citation.textContent = result.index;
+
+          citationsSpan.appendChild(citation);
+        });
+
+        // Insert after the last text node
+        if (lastTextNode.parentNode) {
+          console.log('Inserting citations after last text node');
+          lastTextNode.parentNode.insertBefore(citationsSpan, lastTextNode.nextSibling);
+        } else {
+          console.log('No parent node found, appending to element directly');
+          element.appendChild(citationsSpan);
+        }
+
+        console.log('Citations added successfully');
+      } else {
+        console.log(
+          'No citations added: ' +
+            (lastTextNode ? '' : 'No last text node found. ') +
+            (searchResults.length === 0 ? 'No search results available.' : '')
+        );
+      }
+    }
+
     // Function to handle streaming response
     async function handleStreamingResponse(response) {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let responseText = '';
+
+      // Reset search results for this conversation
+      searchResults = [];
 
       // Create a placeholder for the assistant's response
       const messageDiv = document.createElement('div');
@@ -139,8 +262,14 @@
           const chunk = decoder.decode(value, { stream: true });
           responseText += chunk;
 
-          // Update the message with the current text, rendered as markdown with LaTeX
-          renderMarkdownAndLatex(messagePara, responseText);
+          // Process the text to extract search results and clean up markers
+          const processedText = processSearchResults(responseText);
+
+          // Update the message with the processed text, rendered as markdown with LaTeX
+          renderMarkdownAndLatex(messagePara, processedText);
+
+          // Add search result citations
+          addSearchCitations(messagePara);
 
           // Scroll to bottom of chat
           chatMessages.scrollTop = chatMessages.scrollHeight;

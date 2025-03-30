@@ -2,9 +2,10 @@ from typing import Optional, Dict, Any
 import logging
 
 from fastapi import FastAPI, Response, HTTPException, Request
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+import urllib.parse
 
 from dotenv import load_dotenv
 import os
@@ -204,10 +205,44 @@ async def chat_with_paper(request: Request, id: str):
 
     # Create a streaming response with the chat
     async def generate_response():
-        for chunk in gemini_ask_question(chat, user_message):
-            yield chunk
+        # Store search results for this conversation
+        search_results = []
+        
+        for response_item in gemini_ask_question(chat, user_message):
+            if response_item["type"] == "text":
+                # Just yield the text content
+                yield response_item["content"]
+            elif response_item["type"] == "search_result":
+                # Add search result to the list
+                search_result = response_item["content"]
+                search_results.append(search_result)
+                
+                # Encode the URL for the redirect endpoint
+                encoded_url = urllib.parse.quote(search_result['url'])
+                redirect_url = f"/redirect?url={encoded_url}"
+                
+                # Yield a special marker for search results in the format that the frontend can parse
+                # Format: __SEARCH_RESULT__{index}:{redirect_url}:{title}:{query}__
+                yield f"__SEARCH_RESULT__{search_result['index']}:{redirect_url}:{search_result['title']}:{search_result['query']}__"
 
     return StreamingResponse(generate_response())
+
+@app.get("/redirect")
+async def redirect_to_url(request: Request):
+    """
+    Endpoint to handle redirecting to external URLs, especially for Google Search results.
+    """
+    url = request.query_params.get("url", "")
+    if not url:
+        raise HTTPException(status_code=400, detail="URL parameter is required")
+    
+    # Decode the URL
+    decoded_url = urllib.parse.unquote(url)
+    logger.info(f"Redirecting to: {decoded_url}")
+    
+    # Return a redirect response
+    return RedirectResponse(url=decoded_url)
+
 
 @app.get("/podcast/{id}")
 async def generate_podcast(request: Request,id: str):

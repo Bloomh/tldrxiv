@@ -99,25 +99,28 @@ def create_gemini_chat(doc: types.File, context_message: str = "", model: str = 
     return chat
 
 
-def gemini_ask_question(chat: Chat, prompt: str) -> Iterator[str]:
+def gemini_ask_question(chat: Chat, prompt: str) -> Iterator[dict]:
     """
     Ask a question to Gemini. Note that the response is a stream of text chunks.
-    Logs Google Search queries and URLs accessed by the model.
+    Now also yields search results along with text chunks.
 
     Args:
         chat (Chat): Chat object from create_gemini_chat
         prompt (str): Question to ask
 
     Yields:
-        str: Text chunks from the response
+        dict: Dictionary containing text chunks and search results
+              Format: {"type": "text"|"search_result", "content": str}
     """
     # Send the message to get the streamed response
     response = chat.send_message_stream(prompt)
-    
+
     # Track search queries and URLs we've seen to avoid duplicates
     seen_queries = set()
     seen_urls = set()
-    
+    search_results = []
+    result_index = 1
+
     # Process each chunk in the response
     for chunk in response:
         # Check for search information in candidates
@@ -142,13 +145,30 @@ def gemini_ask_question(chat: Chat, prompt: str) -> Iterator[str]:
                                 if hasattr(chunk_item, 'web') and chunk_item.web:
                                     if hasattr(chunk_item.web, 'uri') and chunk_item.web.uri:
                                         url = chunk_item.web.uri
+                                        title = getattr(chunk_item.web, 'title', 'Search Result')
                                         if url and url not in seen_urls:
                                             print(f"Google Search URL: {url}")
                                             seen_urls.add(url)
 
+                                            # Add to search results list
+                                            search_results.append({
+                                                "index": result_index,
+                                                "url": url,
+                                                "title": title,
+                                                "query": next(iter(seen_queries)) if seen_queries else "Unknown query"
+                                            })
+
+                                            # Yield search result
+                                            yield {
+                                                "type": "search_result",
+                                                "content": search_results[-1]
+                                            }
+
+                                            result_index += 1
+
         # Yield the text from the chunk
         if chunk.text:
-            yield chunk.text
+            yield {"type": "text", "content": chunk.text}
 
 
 def generate_podcast_script(pdf_bytes: bytes, model_name="gemini-1.5-pro-latest") -> str:
