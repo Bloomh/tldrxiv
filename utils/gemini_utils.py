@@ -107,14 +107,17 @@ def generate_podcast_script(pdf_bytes: bytes, model_name="gemini-1.5-pro-latest"
     print("Generating podcast script...")
     pdf_file = gemini_upload_file(pdf_bytes)
 
-    prompt = """Create a 5-minute podcast script that summarizes this research paper for a general audience. 
-    Structure it with:
-    1. Introduction to the field
-    2. Key research question
-    3. Methodology overview
-    4. Main findings
-    5. Significance/implications
-    Use conversational language and include engaging segues."""
+    prompt = """Create a podcast script summary of this research paper for a general audience. Follow these rules:
+    1. Structure with: introduction to the field, key research question, methodology overview, main findings, and significance
+    2. Write in natural, conversational paragraphs that flow like a real podcast
+    3. Absolutely DO NOT include phrases like:
+       - "Here's a 5-minute podcast script..."
+       - "Welcome to this podcast about..."
+       - "Let's dive in"
+       - Any other meta commentary about the script itself
+    4. Start immediately with substantive content about the paper
+    5. Use engaging segues between sections but keep them natural
+    6. Maintain a professional yet accessible tone"""
 
     response = create_gemini_chat(pdf_file).send_message([
         prompt
