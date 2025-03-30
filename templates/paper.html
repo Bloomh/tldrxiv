@@ -68,7 +68,7 @@
           <div class="flex flex-wrap gap-2 mb-4">
             {% for author in authors_info %}
             <div class="relative inline-block group">
-              <span class="author-tag cursor-pointer">
+              <span class="author-tag cursor-pointer py-0.5">
                 <i class="fas fa-user-academic mr-1 opacity-70"></i> {{ author.name }}
               </span>
               <!-- Popup -->
@@ -282,14 +282,14 @@
           const btn = document.getElementById('generate-podcast-button');
           btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Generating...`;
           btn.disabled = true;
-          
+
           try {
               const response = await fetch(`/podcast/${paperId}`);
               if (!response.ok) throw new Error(await response.text());
-              
+
               const audioBlob = await response.blob();
               const url = window.URL.createObjectURL(audioBlob);
-              
+
               // Trigger download
               const a = document.createElement('a');
               a.href = url;
@@ -297,7 +297,7 @@
               document.body.appendChild(a);
               a.click();
               window.URL.revokeObjectURL(url);
-              
+
           } catch (error) {
               showErrorNotification(`Podcast generation failed: ${error.message}`);
           } finally {
@@ -305,7 +305,7 @@
               btn.disabled = false;
           }
       }
-      
+
       function showErrorNotification(message) {
           // Use your existing error notification system or create a simple one
           const alertDiv = document.createElement('div');
