@@ -25,7 +25,8 @@ logger = logging.getLogger("tldrxiv")
 # Importing our utils
 from utils.arxiv_utils import get_paper_info, download_paper_pdf
 from utils.sem_scholar_utils import get_paper_authors_info, get_paper_citations, get_paper_references, get_recommended_papers
-from utils.gemini_utils import gemini_upload_file, create_gemini_chat, gemini_ask_question
+from utils.gemini_utils import gemini_upload_file, create_gemini_chat, gemini_ask_question, generate_podcast_script
+from utils.openai_utils import text_to_speech
 
 load_dotenv()
 
@@ -198,6 +199,48 @@ async def chat_with_paper(request: Request, id: str):
             yield chunk
 
     return StreamingResponse(generate_response())
+
+@app.get("/podcast/{id}")
+async def generate_podcast(request: Request,id: str):
+    """ Generate audio podcast for a given paper """
+    logger.info(f"Generating podcast for paper {id}")
+
+    # Get paper info
+    paper = get_paper_info(id)
+
+    if "error" in paper:
+        return templates.TemplateResponse(
+            "error.html",
+            {"request": request, "error": paper["error"]}
+        )
+
+    # Download the PDF
+    pdf_content = download_paper_pdf(paper)
+    if isinstance(pdf_content, dict):
+        return templates.TemplateResponse(
+            "error.html",
+            {"request": request, "error": pdf_content["error"]}
+        )
+
+    try:
+        # Generate podcast script
+        podcast_script = generate_podcast_script(pdf_content)
+
+        # Generate podcast
+        audio_content = text_to_speech(podcast_script)
+
+        return Response(
+            audio_content,
+            media_type="audio/mpeg",
+            headers={"Content-Disposition": f"attachment; filename={id}_podcast.mp3"}
+        )
+    except Exception as e:
+        logger.error(f"Error generating podcast: {str(e)}")
+        return templates.TemplateResponse(
+            "error.html",
+            {"request": request, "error": str(e)}
+        )
+
 
 
 if __name__ == "__main__":
