@@ -57,7 +57,7 @@ async def search(request: Request, q: str):
         # Assume it's already an ID
         id = q.strip()
         logger.info(f"Using provided ID: {id}")
-    
+
     # Redirect to the paper page
     from fastapi.responses import RedirectResponse
     logger.info(f"Redirecting to /abs/{id}")
@@ -241,6 +241,20 @@ async def generate_podcast(request: Request,id: str):
             {"request": request, "error": str(e)}
         )
 
+
+
+@app.exception_handler(404)
+async def custom_404_handler(request: Request, exc: HTTPException):
+    logger.warning(f"404 error for path: {request.url.path}")
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/", status_code=302)
+
+
+@app.get("/{path:path}")
+async def catch_all(request: Request, path: str):
+    logger.warning(f"Unhandled route accessed: {path}")
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/", status_code=302)
 
 
 if __name__ == "__main__":

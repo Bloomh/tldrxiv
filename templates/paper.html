@@ -159,42 +159,8 @@
               </div>
 
               <!-- Citation table -->
-              <div>
-              <div class="table-header">Citations</div>
-              <div class="table-container">
-              <div class="table-content"> <!-- Adjust height as needed -->
-                <table class="data-table">
-                  <thead class="sticky top-0">
-                    <tr class="bg-gray-100">
-                      <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Title</th>
-                      <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Year</th>
-                      <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Authors</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-200">
-                    {% for citation in citations_info %}
-                      <tr class="hover:bg-gray-50">
-                        <td class="py-2 px-3 text-sm text-blue-600">
-                          <a class="paper-link" href="{% if citation.citingPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ citation.citingPaper.externalIds.ArXiv }}{% else %}{{ citation.citingPaper.url }}{% endif %}" target="_blank">
-                            {{ citation.citingPaper.title }}
-                          </a>
-                        </td>
-                        <td class="py-2 px-3 text-sm">{{ citation.citingPaper.year }}</td>
-                        <td class="py-2 px-3 text-sm">
-                          {% set authors = citation.citingPaper.authors %}
-                          {% if authors|length > 3 %}
-                            {{ authors[:3] | map(attribute='name') | join(', ') }}, ...
-                          {% else %}
-                            {{ authors | map(attribute='name') | join(', ') }}
-                          {% endif %}
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-              </div>
-              </div>
+              {% from "components/paper_table.html" import render_table %}
+              {{ render_table("Citations", citations_info, "citation") }}
               </div>
 
             <!-- References section -->
@@ -212,48 +178,7 @@
               </div>
 
               <!-- References table -->
-              <div>
-  <div class="table-header">References</div>
-  <div class="table-container">
-    <div class="table-content"> <!-- Adjust height as needed -->
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Title
-            </th>
-            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Year
-            </th>
-            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Authors
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          {% for reference in references_info %}
-            <tr class="hover:bg-gray-50">
-              <td class="py-2 px-3 text-sm text-blue-600">
-                <a class="paper-link" href="{% if reference.citedPaper.externalIds.ArXiv %}http://localhost:8000/abs/{{ reference.citedPaper.externalIds.ArXiv }}{% else %}{{ reference.citedPaper.url }}{% endif %}" target="_blank">
-                  {{ reference.citedPaper.title }}
-                </a>
-              </td>
-              <td class="py-2 px-3 text-sm">{{ reference.citedPaper.year }}</td>
-              <td class="py-2 px-3 text-sm">
-                {% set authors = reference.citedPaper.authors %}
-                {% if authors|length > 3 %}
-                  {{ authors[:3] | map(attribute='name') | join(', ') }}, ...
-                {% else %}
-                  {{ authors | map(attribute='name') | join(', ') }}
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+              {{ render_table("References", references_info, "reference") }}
             </div>
 
 
@@ -262,48 +187,7 @@
               <h2 class="section-title text-xl"><i class="fas fa-lightbulb mr-2 opacity-70"></i>Recommended Papers</h2>
 
               <!-- Recommended Papers table -->
-              <div>
-  <div class="table-header">Recommended Papers</div>
-  <div class="table-container">
-    <div class="table-content"> <!-- Adjust height as needed -->
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Title
-            </th>
-            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Year
-            </th>
-            <th class="py-2 px-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-              Authors
-            </th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200">
-          {% for paper in recommended_papers %}
-            <tr class="hover:bg-gray-50">
-              <td class="py-2 px-3 text-sm text-blue-600">
-                <a class="paper-link" href="{% if paper.externalIds.ArXiv %}http://localhost:8000/abs/{{ paper.externalIds.ArXiv }}{% else %}{{ paper.url }}{% endif %}" target="_blank">
-                  {{ paper.title }}
-                </a>
-              </td>
-              <td class="py-2 px-3 text-sm">{{ paper.year }}</td>
-              <td class="py-2 px-3 text-sm">
-                {% set authors = paper.authors %}
-                {% if authors|length > 3 %}
-                  {{ authors[:3] | map(attribute='name') | join(', ') }}, ...
-                {% else %}
-                  {{ authors | map(attribute='name') | join(', ') }}
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+              {{ render_table("Recommended Papers", recommended_papers, "recommended") }}
             </div>
           </div>
 
@@ -319,6 +203,36 @@
       </div>
     </div>
     <!-- Initialize Markdown and LaTeX rendering for the abstract -->
+    <style>
+      /* Ensure tooltips are visible */
+      .table-container, .data-table, thead, tr, th {
+        overflow: visible !important;
+      }
+
+      /* Table content scrolling */
+      .table-content {
+        overflow-y: auto !important;
+        overflow-x: visible !important;
+        position: relative;
+        max-height: 400px;
+      }
+
+      /* Tooltip styles */
+      th[class*="cursor-help"]:hover div {
+        display: block !important;
+      }
+
+      /* Table spacing */
+      .mb-12 {
+        margin-bottom: 3rem !important;
+      }
+
+      /* Ensure tables don't overflow their containers */
+      .data-table {
+        width: 100%;
+      }
+    </style>
+
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         // Render only LaTeX in the abstract content (no Markdown)

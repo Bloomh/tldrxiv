@@ -1,0 +1,96 @@
+{% macro render_table(title, items, item_type) %}
+<div class="mb-12">
+  <!-- Add margin bottom for spacing between tables -->
+  <div class="table-header">{{ title }}</div>
+  <div class="table-container overflow-visible">
+    <div class="table-content overflow-visible max-h-96">
+      <!-- Add max height with scrolling -->
+      <!-- Adjust height as needed -->
+      <table class="data-table">
+        <thead class="sticky top-0">
+          <tr class="bg-gray-100">
+            <th
+              class="py-2 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+            >
+              Title
+            </th>
+            <th
+              class="py-2 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+            >
+              Authors
+            </th>
+            {% if item_type == 'reference' or item_type == 'citation' %}
+            <th
+              class="py-2 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider relative group cursor-help"
+            >
+              Intent
+              <div
+                class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded p-2 z-50 w-56 -left-16 top-8 shadow-lg overflow-visible"
+              >
+                How a paper is referenced. These can be Background, Method, or Result.
+              </div>
+            </th>
+            {% endif %} {% if item_type != 'recommended' %}
+            <th
+              class="py-2 px-4 text-center text-xs font-medium text-gray-600 uppercase tracking-wider relative group cursor-help"
+            >
+              Influential
+              <div
+                class="absolute hidden group-hover:block bg-gray-800 text-white text-xs rounded p-2 z-50 w-56 -left-16 top-8 shadow-lg overflow-visible"
+              >
+                Whether the cited publication has a significant impact on the citing publication.
+              </div>
+            </th>
+            {% endif %}
+            <th
+              class="py-2 px-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
+            >
+              Year
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for item in items %}
+          <tr class="hover:bg-gray-50">
+            <td class="py-2 px-4 text-sm text-blue-600">
+              {% if item_type == 'citation' %} {% set paper = item.citingPaper %} {% set paper_id =
+              paper.externalIds.ArXiv %} {% elif item_type == 'reference' %} {% set paper =
+              item.citedPaper %} {% set paper_id = paper.externalIds.ArXiv %} {% else %} {% set
+              paper = item %} {% set paper_id = paper.externalIds.ArXiv %} {% endif %}
+
+              <a
+                class="paper-link"
+                href="{% if paper_id %}http://localhost:8000/abs/{{ paper_id }}{% else %}{{ paper.url }}{% endif %}"
+                target="_blank"
+              >
+                {{ paper.title }}
+              </a>
+            </td>
+            <td class="py-2 px-4 text-sm">
+              {% set authors = paper.authors %} {% if authors|length > 3 %} {{ authors[:3] |
+              map(attribute='name') | join(', ') }}, ... {% else %} {{ authors |
+              map(attribute='name') | join(', ') }} {% endif %}
+            </td>
+            {% if item_type == 'reference' or item_type == 'citation' %}
+            <td class="py-2 px-4 text-sm">
+              {% if item.intents|default([])|length > 0 %} {{ item.intents|join(', ') }} {% else %}
+              — {% endif %}
+            </td>
+            {% endif %} {% if item_type != 'recommended' %}
+            <td class="py-2 px-4 text-sm text-center">
+              {% if item.isInfluential %}
+              <i class="fas fa-check-circle text-green-600"></i>
+              {% else %}
+              <i class="fas fa-times-circle text-red-500"></i>
+              {% endif %}
+            </td>
+            {% endif %}
+            <td class="py-2 px-4 text-sm">{{ paper.year }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endmacro %}
